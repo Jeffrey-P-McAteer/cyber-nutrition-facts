@@ -2,14 +2,25 @@ use printpdf::*;
 use std::fs::File;
 use std::io::BufWriter;
 
-mod args;
+type DynResult<T> = Result<T, Box<dyn std::error::Error>>;
 
-fn main() {
+mod args;
+mod checks;
+
+fn main() -> DynResult<()> {
     use clap::Parser;
     let args = args::Args::parse();
-    
-    println!("args = {:?}", args);
 
+    match args.input {
+        args::AnalysisInput::Command(args::ArgCommand::CheckSetup) => {
+            checks::check_setup(&args);
+        }
+        _ => {
+            println!("Unhandled main path, args = {:?}", args);
+        }
+    }
+    
+    Ok(())
 }
 
 

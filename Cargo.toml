@@ -4,7 +4,15 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-printpdf = "0.4"
+
+# Parses command-line arguments into data structures
 clap = { version = "4", features = ["derive"] }
+
+# Parses uris
 uris = "0.1"
 
+# Looks up full .exe paths given program names; used to identify missing software.
+which = "8"
+
+# Performs automated PDF generation
+printpdf = "0.4"
