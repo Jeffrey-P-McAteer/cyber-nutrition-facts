@@ -14,10 +14,10 @@ fn main() -> DynResult<()> {
 
     match args.input {
         args::AnalysisInput::File(ref file_to_analyze) => {
-            analysis::analyze_single_binary(file_to_analyze, &args);
+            analysis::analyze_single_file(file_to_analyze, &args)?;
         }
         args::AnalysisInput::Command(args::ArgCommand::CheckSetup) => {
-            checks::check_setup(&args);
+            checks::check_setup(&args)?;
         }
         _ => {
             println!("Unhandled main path, args = {:?}", args);

@@ -16,3 +16,8 @@ which = "8"
 
 # Performs automated PDF generation
 printpdf = "0.4"
+
+# Used to determine file types from magic bytes. This embeds the same Magic & MIMEs used by https://tika.apache.org/
+tika-magic = "0.2"
+
+

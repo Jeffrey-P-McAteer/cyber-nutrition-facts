@@ -55,12 +55,7 @@ impl std::str::FromStr for AnalysisInput {
             Ok(AnalysisInput::Url(uri))
         }
         else if let Ok(path) = r_path {
-            if path.exists() {
-                return Ok(AnalysisInput::from(path));
-            }
-            else {
-                Err(format!("The path '{:?}' does not exist!", path))
-            }
+            return Ok(AnalysisInput::from(path));
         }
         else {
             let mut all_err_msgs = String::with_capacity(1024);
