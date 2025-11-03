@@ -2,6 +2,9 @@
 #[derive(Debug, clap::Parser)]
 pub struct Args {
     pub input: AnalysisInput,
+
+    #[arg(short, long)]
+    pub output_report: Option<std::path::PathBuf>,
 }
 
 #[derive(Debug, Clone)]
@@ -9,6 +12,13 @@ pub enum AnalysisInput {
     Url(uris::Uri),
     File(std::path::PathBuf),
     Folder(std::path::PathBuf),
+    Command(ArgCommand),
+}
+
+// This is used to allow a sub-command like capability
+#[derive(Debug, Clone)]
+pub enum ArgCommand {
+    CheckSetup
 }
 
 impl std::str::FromStr for AnalysisInput {
@@ -20,8 +30,15 @@ impl std::str::FromStr for AnalysisInput {
         // This way if we have a "may be URI or may be file" we can place business logic there.
         let r_uri = uris::Uri::parse(s);
         let r_path = std::path::PathBuf::from_str(s);
+        let r_command = ArgCommand::from_str(s);
 
         // Ahead-of-line parsing;
+
+        // Commands: These are run first, and unfortunately deny file-paths which match. Sucks, we don't care.
+        //           Don't write .pdf reports to the path ./check.
+        if let Ok(ref command) = r_command {
+            return Ok(AnalysisInput::Command(command.clone()));
+        }
 
         // Paths: if the path parses and points to an existing item, prefer that as it's likely what the user intended.
         if let Ok(ref path) = r_path {
@@ -31,7 +48,10 @@ impl std::str::FromStr for AnalysisInput {
         }
         
         // Regular parse hierarchy; most-detailed formats to least-detailed
-        if let Ok(uri) = r_uri {
+        if let Ok(command) = r_command {
+            return Ok(AnalysisInput::Command(command));
+        }
+        else if let Ok(uri) = r_uri {
             Ok(AnalysisInput::Url(uri))
         }
         else if let Ok(path) = r_path {
@@ -39,7 +59,7 @@ impl std::str::FromStr for AnalysisInput {
                 return Ok(AnalysisInput::from(path));
             }
             else {
-                Err(format!("{:?} does not exist!", path))
+                Err(format!("The path '{:?}' does not exist!", path))
             }
         }
         else {
@@ -51,6 +71,21 @@ impl std::str::FromStr for AnalysisInput {
                 all_err_msgs.push_str(format!("While parsing as Path: {:?}\n", e).as_str());
             }
             Err(all_err_msgs)
+        }
+    }
+}
+
+impl std::str::FromStr for ArgCommand {
+    type Err = String;
+
+    #[allow(irrefutable_let_patterns)]
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let s = s.to_lowercase();
+        if s == "check" || s == "check-setup" || s == "check_setup" {
+            Ok(ArgCommand::CheckSetup)
+        }
+        else {
+            Err(format!("Unknown command: '{s}'. Valid commands are [check, ]"))
         }
     }
 }
