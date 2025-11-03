@@ -55,7 +55,7 @@ pub fn analyze_single_binary(path: &std::path::Path, args: &crate::args::Args) -
 
 pub fn analyze_single_source(path: &std::path::Path, args: &crate::args::Args) -> crate::DynResult<()> {
     let language_detection = hyperpolyglot::detect(path).map_err(|e| crate::tracked_err!(e))?;
-    let lang = language_detection.language().to_lowercase();
+    let lang = language_detection.map(|v| v.language()).unwrap_or_else(|| "Unknown").to_lowercase();
 
     println!("language_detection = {:?} lang = {:?}", language_detection, lang);
     println!("TODO analyze_single_source {:?}", path);
