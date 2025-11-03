@@ -2,10 +2,14 @@ use printpdf::*;
 use std::fs::File;
 use std::io::BufWriter;
 
-
+mod args;
 
 fn main() {
-    println!("Hello, world!");
+    use clap::Parser;
+    let args = args::Args::parse();
+    
+    println!("args = {:?}", args);
+
 }
 
 
