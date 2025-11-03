@@ -24,3 +24,8 @@ tika-magic = "0.2"
 #hyperpolyglot = { git = "https://github.com/monkslc/hyperpolyglot.git" }
 hyperpolyglot = "0.1"
 
+# Used for high-level analysis of C++,Go,Java,JavaScript,Python,Rust,Typescript source code.
+# See https://mozilla.github.io/rust-code-analysis/metrics.html for metrics we report, normalized to a "per 100 LOC" number
+rust-code-analysis = "0.0.24"
+
+
