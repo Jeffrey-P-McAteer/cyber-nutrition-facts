@@ -36,7 +36,9 @@ fn is_pe32(mime: &str) -> bool {
 }
 
 fn is_text(mime: &str) -> bool {
-    return mime == "application/octet-stream" || mime == "application/text" || mime.starts_with("text/");
+    return mime == "application/octet-stream" || mime == "application/text" || 
+           mime.starts_with("text/") ||
+           mime == "application/x-sh";
 }
 
 fn hyperpolygot_is_text(path: &std::path::Path) -> bool {
