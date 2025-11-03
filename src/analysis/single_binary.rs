@@ -6,17 +6,18 @@ pub fn analyze_single_file(path: &std::path::Path, args: &crate::args::Args) -> 
     match tika_magic::from_filepath(path) {
         Some(mime) => {
             if is_pe64(mime) || is_pe32(mime) {
-                analyze_single_binary(path)
+                analyze_single_binary(path, args)
             }
             else if is_text(mime) {
-                analyze_single_source(path)
+                analyze_single_source(path, args)
             }
             else {
-                Err(format!("{:?} has a MIME of {} which is not supported!", path, mime).into())
+                //Err(crate::tracked_err!( format!("{:?} has a MIME of {} which is not supported!", path, mime).into() ).into())
+                Err(crate::tracked_err!( format!("{:?} has a MIME of {} which is not supported!", path, mime) ).into())
             }
         }
         None => {
-            Err(format!("Cannot determine type of file at {:?}", path).into())
+            Err(crate::tracked_err!( format!("Cannot determine type of file at {:?}", path) ).into())
         }
     }
 }
@@ -41,7 +42,9 @@ pub fn analyze_single_binary(path: &std::path::Path, args: &crate::args::Args) -
 }
 
 pub fn analyze_single_source(path: &std::path::Path, args: &crate::args::Args) -> crate::DynResult<()> {
-    
+    let language_detection = hyperpolyglot::detect(path).map_err(|e| crate::tracked_err!(e))?;
+
+    println!("language_detection = {:?}", language_detection);
     println!("TODO analyze_single_source {:?}", path);
 
     Ok(())

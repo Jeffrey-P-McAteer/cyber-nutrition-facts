@@ -21,5 +21,6 @@ printpdf = "0.4"
 tika-magic = "0.2"
 
 # Used to identify source languages to pass Inputs to analysis routines
-hyperpolygot = "0.1"
+#hyperpolyglot = { git = "https://github.com/monkslc/hyperpolyglot.git" }
+hyperpolyglot = "0.1"
 

@@ -1,3 +1,6 @@
+// We have several compiler warnings we don't care about during early development
+#![allow(unused_variables, unused_imports)]
+
 use printpdf::*;
 use std::fs::File;
 use std::io::BufWriter;
@@ -7,8 +10,16 @@ type DynResult<T> = Result<T, Box<dyn std::error::Error>>;
 mod args;
 mod checks;
 mod analysis;
+mod err; // exports crate::tracked_err!()
 
-fn main() -> DynResult<()> {
+fn main() {
+    if let Err(e) = fallible_main() {
+        println!("{}", e);
+        std::process::exit(1);
+    }
+}
+
+fn fallible_main() -> DynResult<()> {
     use clap::Parser;
     let args = args::Args::parse();
 
