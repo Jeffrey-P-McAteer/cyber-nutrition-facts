@@ -20,4 +20,6 @@ printpdf = "0.4"
 # Used to determine file types from magic bytes. This embeds the same Magic & MIMEs used by https://tika.apache.org/
 tika-magic = "0.2"
 
+# Used to identify source languages to pass Inputs to analysis routines
+hyperpolygot = "0.1"
 
