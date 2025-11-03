@@ -6,12 +6,16 @@ type DynResult<T> = Result<T, Box<dyn std::error::Error>>;
 
 mod args;
 mod checks;
+mod analysis;
 
 fn main() -> DynResult<()> {
     use clap::Parser;
     let args = args::Args::parse();
 
     match args.input {
+        args::AnalysisInput::File(ref file_to_analyze) => {
+            analysis::analyze_single_binary(file_to_analyze, &args);
+        }
         args::AnalysisInput::Command(args::ArgCommand::CheckSetup) => {
             checks::check_setup(&args);
         }
@@ -19,7 +23,7 @@ fn main() -> DynResult<()> {
             println!("Unhandled main path, args = {:?}", args);
         }
     }
-    
+
     Ok(())
 }
 
