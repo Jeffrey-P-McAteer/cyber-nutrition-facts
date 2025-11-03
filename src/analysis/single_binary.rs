@@ -17,7 +17,12 @@ pub fn analyze_single_file(path: &std::path::Path, args: &crate::args::Args) -> 
             }
         }
         None => {
-            Err(crate::tracked_err!( format!("Cannot determine type of file at {:?}", path) ).into())
+            if hyperpolygot_is_text(path) { // Empty files do this
+                analyze_single_source(path, args)
+            }
+            else {
+                Err(crate::tracked_err!( format!("Cannot determine type of file at {:?}", path) ).into())
+            }
         }
     }
 }
@@ -34,6 +39,13 @@ fn is_text(mime: &str) -> bool {
     return mime == "application/octet-stream" || mime == "application/text";
 }
 
+fn hyperpolygot_is_text(path: &std::path::Path) -> bool {
+    match hyperpolyglot::detect(path) {
+        Ok(Some(detection)) => detection.language().to_lowercase() == "text",
+        _ => false
+    }
+}
+
 pub fn analyze_single_binary(path: &std::path::Path, args: &crate::args::Args) -> crate::DynResult<()> {
     
     println!("TODO analyze_single_binary {:?}", path);
@@ -43,8 +55,9 @@ pub fn analyze_single_binary(path: &std::path::Path, args: &crate::args::Args) -
 
 pub fn analyze_single_source(path: &std::path::Path, args: &crate::args::Args) -> crate::DynResult<()> {
     let language_detection = hyperpolyglot::detect(path).map_err(|e| crate::tracked_err!(e))?;
+    let lang = language_detection.language().to_lowercase();
 
-    println!("language_detection = {:?}", language_detection);
+    println!("language_detection = {:?} lang = {:?}", language_detection, lang);
     println!("TODO analyze_single_source {:?}", path);
 
     Ok(())
