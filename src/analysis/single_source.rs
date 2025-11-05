@@ -9,7 +9,7 @@ pub fn analyze_single_source(path: &std::path::Path, args: &crate::args::Args) -
         print_all_metrics_for_file(path)?;
     }
     else {
-        println!("TODO pass '--style detailed' or greater for in-development outputs.")
+        println!("TODO pass '--style detailed' or greater for in-development outputs.");
     }
 
 
