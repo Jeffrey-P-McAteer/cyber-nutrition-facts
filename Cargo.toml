@@ -28,4 +28,7 @@ hyperpolyglot = "0.1"
 # See https://mozilla.github.io/rust-code-analysis/metrics.html for metrics we report, normalized to a "per 100 LOC" number
 rust-code-analysis = "0.0.24"
 
+goblin = "0.10"
+
+
 
