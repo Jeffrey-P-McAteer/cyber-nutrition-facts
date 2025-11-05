@@ -5,7 +5,7 @@ pub fn analyze_single_file(path: &std::path::Path, args: &crate::args::Args) -> 
     // Then dispatch to the correct file type function.
     match tika_magic::from_filepath(path) {
         Some(mime) => {
-            if is_pe64(mime) || is_pe32(mime) {
+            if is_pe64(mime) || is_pe32(mime) || is_elf(mime) {
                 crate::analysis::single_binary::analyze_single_binary(path, args)
             }
             else if is_text(mime) {
@@ -33,6 +33,10 @@ pub fn is_pe64(mime: &str) -> bool {
 
 pub fn is_pe32(mime: &str) -> bool {
     return mime == "application/x-msdownload";
+}
+
+pub fn is_elf(mime: &str) -> bool {
+    return mime == "application/x-sharedlib";
 }
 
 pub fn is_text(mime: &str) -> bool {

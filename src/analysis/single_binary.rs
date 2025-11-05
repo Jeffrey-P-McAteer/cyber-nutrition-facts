@@ -5,3 +5,6 @@ pub fn analyze_single_binary(path: &std::path::Path, args: &crate::args::Args) -
 
     Ok(())
 }
+
+
+
