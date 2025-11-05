@@ -24,17 +24,26 @@ pub fn print_referenced_libraries(prefix: &str, gobj: &goblin::Object, args: &cr
             println!("{}= = = = Shared Libraries = = = =", prefix);
             let dynamic_libs = elf.dynamic.as_ref().map(|v| v.get_libraries(&elf.dynstrtab)).unwrap_or_else(|| vec![]);
             if dynamic_libs.len() < 1 {
-                println!("{}NO LIBRARIES REFERENCED IN dynstrtab", prefix);
+                println!("{}NO LIBRARIES REFERENCED IN elf.dynstrtab", prefix);
             }
             else {
                 for lib in dynamic_libs.iter() {
-                    println!("{} - {}", prefix, lib)
+                    println!("{} - {}", prefix, lib);
                 }
             }
 
         }
         goblin::Object::PE(pe) => {
-
+            println!("{}= = = = Shared Libraries = = = =", prefix);
+            let import_libs: Vec<String> = pe.import_data.as_ref().map(|v| (&v.import_data).into_iter().map(|id| id.name.to_string()).collect() ).unwrap_or_else(|| vec![]);
+            if import_libs.len() < 1 {
+                println!("{}NO LIBRARIES REFERENCED IN pe.import_data", prefix);
+            }
+            else {
+                for lib in import_libs.iter() {
+                    println!("{} - {}", prefix, lib);
+                }
+            }
         }
         _ => {
             println!("{} TODO Implement support in print_referenced_libraries for gobj={:?}", prefix, gobj);
