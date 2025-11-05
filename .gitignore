@@ -1,4 +1,20 @@
 
+samples/c_safe_a
+samples/c_safe_a.exe
+
+samples/c_unsafe_a
+samples/c_unsafe_a.exe
+
+*.exe
+*.Exe
+*.EXE
+
+*.obj
+*.Obj
+*.OBJ
+
+*.o
+*.O
 
 # Added by cargo
 
