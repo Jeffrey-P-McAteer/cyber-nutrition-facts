@@ -131,7 +131,7 @@ impl std::convert::From<&std::path::Path> for AnalysisInput {
 }
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum ReportStyle {
     Terse,
     Normal,
@@ -154,6 +154,14 @@ impl ReportStyle {
             ReportStyle::Normal => format!("n|normal: {}", self.description()),
             ReportStyle::Detailed => format!("d|detailed: {}", self.description()),
             ReportStyle::Overflowing => format!("o|overflowing: {}", self.description()),
+        }
+    }
+    pub fn enum_index(&self) -> u8 {
+        match self {
+            ReportStyle::Terse => 0u8,
+            ReportStyle::Normal => 10u8,
+            ReportStyle::Detailed => 20u8,
+            ReportStyle::Overflowing => 30u8,
         }
     }
 }
@@ -197,6 +205,17 @@ impl std::str::FromStr for ReportStyle {
 
             Err(format!("Unknown ReportStyle: '{s}'.\nValid ReportStyles are [t|terse, n|normal, d|detailed, o|overflowing]:\n{}", style_detail_lines))
         }
+    }
+}
+
+impl Ord for ReportStyle {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.enum_index().cmp(&other.enum_index())
+    }
+}
+impl PartialOrd for ReportStyle {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(&other))
     }
 }
 

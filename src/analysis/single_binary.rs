@@ -59,11 +59,14 @@ pub fn analyze_single_source(path: &std::path::Path, args: &crate::args::Args) -
     let language_detection = hyperpolyglot::detect(path).map_err(|e| crate::tracked_err!(e))?;
     let lang = language_detection.map(|v| v.language()).unwrap_or_else(|| "Unknown").to_lowercase();
 
-    println!("language_detection = {:?} lang = {:?}", language_detection, lang);
-    println!("TODO analyze_single_source {:?}", path);
-
-
-    print_all_metrics_for_file(path)?;
+    if args.style >= crate::args::ReportStyle::Detailed {
+        println!("language_detection = {:?} lang = {:?}", language_detection, lang);
+        println!("TODO analyze_single_source {:?}", path);
+        print_all_metrics_for_file(path)?;
+    }
+    else {
+        println!("TODO pass '--style detailed' or greater for in-development outputs.")
+    }
 
 
     Ok(())
