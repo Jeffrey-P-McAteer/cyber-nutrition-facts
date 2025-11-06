@@ -1,51 +1,30 @@
 
+
 pub fn analyze_single_binary(path: &std::path::Path, args: &crate::args::Args) -> crate::DynResult<()> {
     
     let binary_content_bytes = std::fs::read(path)?;
 
     let obj = goblin::Object::parse(&binary_content_bytes)?;
 
-    if args.style >= crate::args::ReportStyle::Detailed {
-        println!("TODO analyze_single_binary {:?}", path);
-        println!("obj = {:?}", obj);
-        print_referenced_libraries("", &obj, args);
-    }
-    else {
-        println!("TODO pass '--style detailed' or greater for in-development outputs.");
-        print_referenced_libraries("", &obj, args);
-    }
+    print_referenced_libraries("", path, &obj, args);
 
     Ok(())
 }
 
-pub fn print_referenced_libraries(prefix: &str, gobj: &goblin::Object, args: &crate::args::Args) {
+pub fn print_referenced_libraries(prefix: &str, path: &std::path::Path, gobj: &goblin::Object, args: &crate::args::Args) {
     match gobj {
         goblin::Object::Elf(elf) => {
             println!("{}= = = = Shared Libraries = = = =", prefix);
 
             let dynamic_libs = elf.dynamic.as_ref().map(|v| v.get_libraries(&elf.dynstrtab)).unwrap_or_else(|| vec![]);
-            let mut lib_funcs: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
 
-            // for sym_entry in &elf.dynsyms {
-            //     let x:u8=sym_entry;
-            //     let mut funcs = vec![];
-            //     let name = elf.dynstrtab.get_at(sym_entry.st_name).unwrap_or("<unnamed>");
-            //     let typ = goblin::elf::sym::st_type(sym_entry.st_info);
-            //     let kind = match typ {
-            //         goblin::elf::sym::STT_FUNC => "FUNC",
-            //         0 => "NOTYPE",
-            //         _ => "OTHER",
-            //     };
-            //     if (kind == "NOTYPE" || kind == "OTHER") && args.style > crate::args::ReportStyle::Normal {
-            //         funcs.push(format!(""))
-            //     }
-            //     else if kind == "FUNC" {
-
-            //     }
-            //     println!("sym_entry.st_name = {} name = {}", sym_entry.st_name, name);
-            // }
-
-
+            let (lib_funcs, symbols_not_found) = match super::elf_lib_lookup::simulate_dynamic_linking(path, None, args) {
+                Ok(lf) => lf,
+                Err(e) => {
+                    eprintln!("{:?}", e);
+                    (std::collections::HashMap::new(), Vec::new())
+                }
+            };
 
 
             if dynamic_libs.len() < 1 {
@@ -60,6 +39,13 @@ pub fn print_referenced_libraries(prefix: &str, gobj: &goblin::Object, args: &cr
                             println!("{}   - {}", prefix, func);
                         }
                     }
+                }
+            }
+
+            if args.style >= crate::args::ReportStyle::Detailed {
+                println!("{} {} symbols/functions were not found in ANY shared libraries:", prefix, symbols_not_found.len());
+                for not_found_name in symbols_not_found.iter() {
+                    println!("{}   - {}", prefix, not_found_name);
                 }
             }
 
