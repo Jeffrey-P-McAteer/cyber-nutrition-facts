@@ -36,7 +36,7 @@ pub fn is_pe32(mime: &str) -> bool {
 }
 
 pub fn is_elf(mime: &str) -> bool {
-    return mime == "application/x-sharedlib";
+    return mime == "application/x-sharedlib" || mime == "application/x-executable";
 }
 
 pub fn is_text(mime: &str) -> bool {
