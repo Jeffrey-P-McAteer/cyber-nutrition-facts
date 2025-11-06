@@ -178,8 +178,9 @@ def main():
 
     for sample_name in sample_names:
         compile_with_host_toolchain(sample_name)
-        cross_compile_if_zig_available(sample_name, 'x86_64-windows-gnu')
-        cross_compile_if_zig_available(sample_name, 'x86_64-linux')
+        if 'cross' in sys.argv:
+            cross_compile_if_zig_available(sample_name, 'x86_64-windows-gnu')
+            cross_compile_if_zig_available(sample_name, 'x86_64-linux')
 
 
 
