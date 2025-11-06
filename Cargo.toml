@@ -28,7 +28,13 @@ hyperpolyglot = "0.1"
 # See https://mozilla.github.io/rust-code-analysis/metrics.html for metrics we report, normalized to a "per 100 LOC" number
 rust-code-analysis = "0.0.24"
 
+# Binary parsing (PE32+, ELF)
 goblin = "0.10"
+
+# Additional Binary parsing, with focus on following functions and pointers around
+capstone = "0.13"
+object = "0.36"
+
 
 
 

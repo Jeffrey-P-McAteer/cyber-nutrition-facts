@@ -9,4 +9,5 @@ pub use single_binary::*;
 
 
 mod elf_lib_lookup;
+mod elf_internal_func_tree;
 

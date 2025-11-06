@@ -49,6 +49,11 @@ pub fn print_referenced_libraries(prefix: &str, path: &std::path::Path, gobj: &g
                 }
             }
 
+            println!("{}= = = = Internal Function Call Graph = = = =", prefix);
+            if let Err(e) = super::elf_internal_func_tree::print_tree_of_elf(path, "__libc_start_main") {
+                eprintln!("{:?}", e);
+            }
+
         }
         goblin::Object::PE(pe) => {
             println!("{}= = = = Shared Libraries = = = =", prefix);
