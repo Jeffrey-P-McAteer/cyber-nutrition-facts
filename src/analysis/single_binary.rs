@@ -24,13 +24,42 @@ pub fn print_referenced_libraries(prefix: &str, gobj: &goblin::Object, args: &cr
             println!("{}= = = = Shared Libraries = = = =", prefix);
 
             let dynamic_libs = elf.dynamic.as_ref().map(|v| v.get_libraries(&elf.dynstrtab)).unwrap_or_else(|| vec![]);
+            let mut lib_funcs: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+
+            // for sym_entry in &elf.dynsyms {
+            //     let x:u8=sym_entry;
+            //     let mut funcs = vec![];
+            //     let name = elf.dynstrtab.get_at(sym_entry.st_name).unwrap_or("<unnamed>");
+            //     let typ = goblin::elf::sym::st_type(sym_entry.st_info);
+            //     let kind = match typ {
+            //         goblin::elf::sym::STT_FUNC => "FUNC",
+            //         0 => "NOTYPE",
+            //         _ => "OTHER",
+            //     };
+            //     if (kind == "NOTYPE" || kind == "OTHER") && args.style > crate::args::ReportStyle::Normal {
+            //         funcs.push(format!(""))
+            //     }
+            //     else if kind == "FUNC" {
+
+            //     }
+            //     println!("sym_entry.st_name = {} name = {}", sym_entry.st_name, name);
+            // }
+
+
+
 
             if dynamic_libs.len() < 1 {
                 println!("{}NO LIBRARIES REFERENCED IN elf.dynstrtab", prefix);
             }
             else {
                 for lib in dynamic_libs.iter() {
+                    let lib = format!("{}", lib);
                     println!("{} - {}", prefix, lib);
+                    if let Some(funcs) = lib_funcs.get(&lib) {
+                        for func in funcs.iter() {
+                            println!("{}   - {}", prefix, func);
+                        }
+                    }
                 }
             }
 
