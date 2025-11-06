@@ -122,17 +122,47 @@ def repo_path(*parts):
 def sample_c_file(name):
     return repo_path('samples', f'{name}.c')
 
-def sample_exe_file(name):
+def host_sample_exe_file(name):
     if os.name == 'nt':
         return repo_path('samples', f'{name}.exe')
     else:
         return repo_path('samples', f'{name}')
 
-def compile_outfile_args(out_file_path):
+def target_sample_exe_file(name, target):
+    if 'windows' in target:
+        return repo_path('samples', f'{name}.exe')
+    else:
+        return repo_path('samples', f'{name}')
+
+def host_compile_outfile_args(out_file_path):
     if os.name == 'nt':
         return [f'/Fe:', out_file_path]
     else:
         return [f'-o', out_file_path]
+
+def compile_with_host_toolchain(sample_name):
+    compilers = [
+        'clang', 'gcc', 'cl'
+    ]
+    our_compiler = next(shutil.which(c) for c in compilers if shutil.which(c))
+    cmd = [
+        our_compiler,
+        sample_c_file(sample_name),
+        *host_compile_outfile_args(host_sample_exe_file(sample_name))
+    ]
+    print(f'> {" ".join(cmd)}')
+    subprocess.run(cmd, check=True)
+
+def cross_compile_if_zig_available(sample_name, zig_target):
+    zig_exe = shutil.which('zig')
+    if zig_exe:
+        cmd = [
+            'zig', 'cc', '-target', zig_target,
+            sample_c_file(sample_name),
+            '-o', target_sample_exe_file(sample_name, zig_target)
+        ]
+        print(f'> {" ".join(cmd)}')
+        subprocess.run(cmd, check=True)
 
 def main():
     if os.name == 'nt':
@@ -140,11 +170,6 @@ def main():
         for name, value in capture_vcvars(vcvarsall_path(locate_latest_vs())).items():
             os.environ[name] = value
 
-    compilers = [
-        'clang', 'gcc', 'cl'
-    ]
-    our_compiler = next(shutil.which(c) for c in compilers if shutil.which(c))
-    print(f'our_compiler = {our_compiler}')
 
     sample_names = [
         'c_safe_a',
@@ -152,13 +177,9 @@ def main():
     ]
 
     for sample_name in sample_names:
-        cmd = [
-            our_compiler,
-            sample_c_file(sample_name),
-            *compile_outfile_args(sample_exe_file(sample_name))
-        ]
-        print(f'> {" ".join(cmd)}')
-        subprocess.run(cmd, check=True)
+        compile_with_host_toolchain(sample_name)
+        cross_compile_if_zig_available(sample_name, 'x86_64-windows-gnu')
+        cross_compile_if_zig_available(sample_name, 'x86_64-linux')
 
 
 
