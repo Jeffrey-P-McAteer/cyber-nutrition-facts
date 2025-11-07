@@ -138,7 +138,7 @@ def host_compile_outfile_args(out_file_path):
     if os.name == 'nt':
         return [f'/Fe:', out_file_path]
     else:
-        return [f'-o', out_file_path]
+        return [f'-o', out_file_path, '-g']
 
 def compile_with_host_toolchain(sample_name):
     compilers = [
