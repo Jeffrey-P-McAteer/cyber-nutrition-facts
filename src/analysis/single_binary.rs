@@ -7,8 +7,30 @@ pub fn analyze_single_binary(path: &std::path::Path, args: &crate::args::Args) -
     let obj = goblin::Object::parse(&binary_content_bytes)?;
 
     print_referenced_libraries("", path, &obj, args);
+    print_function_call_graph("", path, &obj, args);
 
     Ok(())
+}
+
+pub fn print_function_call_graph(prefix: &str, path: &std::path::Path, gobj: &goblin::Object, args: &crate::args::Args) {
+    match gobj {
+        goblin::Object::Elf(elf) => {
+            println!("{}= = = = Internal Function Call Graph = = = =", prefix);
+            // if let Err(e) = super::elf_internal_func_tree::print_tree_of_elf(path, "__libc_start_main") {
+            //     eprintln!("{:?}", e);
+            // }
+            if let Err(e) = super::elf_internal_func_tree::print_tree_of_elf(path, "") {
+                eprintln!("{:?}", e);
+            }
+
+        }
+        goblin::Object::PE(pe) => {
+            std::unimplemented!()
+        }
+        _ => {
+            std::unimplemented!()
+        }
+    }
 }
 
 pub fn print_referenced_libraries(prefix: &str, path: &std::path::Path, gobj: &goblin::Object, args: &crate::args::Args) {
@@ -47,14 +69,6 @@ pub fn print_referenced_libraries(prefix: &str, path: &std::path::Path, gobj: &g
                 for not_found_name in symbols_not_found.iter() {
                     println!("{}   - {}", prefix, not_found_name);
                 }
-            }
-
-            println!("{}= = = = Internal Function Call Graph = = = =", prefix);
-            // if let Err(e) = super::elf_internal_func_tree::print_tree_of_elf(path, "__libc_start_main") {
-            //     eprintln!("{:?}", e);
-            // }
-            if let Err(e) = super::elf_internal_func_tree::print_tree_of_elf(path, "") {
-                eprintln!("{:?}", e);
             }
 
         }
