@@ -163,6 +163,8 @@ def cross_compile_if_zig_available(sample_name, zig_target):
         ]
         print(f'> {" ".join(cmd)}')
         subprocess.run(cmd, check=True)
+    else:
+        print(f'WARNING: zig not found, skipping cross-compile for the target {zig_target}')
 
 def main():
     if os.name == 'nt':
